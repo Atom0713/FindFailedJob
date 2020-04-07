@@ -51,10 +51,12 @@ class ParseData:
         f.close()  # close "input.csv" file
 
         fnames = ['Name', 'Status', 'Runid', 'Date']  # headers for the output csv file. Data send to the file
+		
         # will be ordered according to the fnames order!
         with open('failed.csv', 'wb') as failed_jobs:  # create a fill failedjobs file
 
             writer_failed = csv.DictWriter(failed_jobs, fieldnames=fnames, delimiter=',')  # creates file with order
+			
             # given by fnames and a data separator (the delimiter -- can be whatever you want)
             writer_failed.writeheader()  # writes headers
             writer_failed.writerows(failed)  # writes the data
@@ -62,11 +64,13 @@ class ParseData:
         with open('other.csv', 'wb') as other_jobs:  # create and fill other than failed jobs file
 
             writer_other = csv.DictWriter(other_jobs, fieldnames=fnames, delimiter=',')   # creates file with order
+			
             # given by fnames and a data separator (the delimiter -- can be whatever you want)
             writer_other.writeheader()  # writes headers
             writer_other.writerows(other)  # writes headers
 
 
 p1 = ParseData("test_data.csv")   # create ParseData class object, calling the constructor of the class
+
 # and passing the file path
 p1.read_data()  # call the read_data() function from ParseData object
