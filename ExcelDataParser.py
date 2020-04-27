@@ -70,7 +70,6 @@ class ParseData:
             writer_other.writerows(other)  # writes headers
 
 
-p1 = ParseData("test_data.csv")   # create ParseData class object, calling the constructor of the class
+p1 = ParseData("test_data.csv")   # create ParseData class object, calling the constructor of the class and pass the file path
 
-# and passing the file path
 p1.read_data()  # call the read_data() function from ParseData object
