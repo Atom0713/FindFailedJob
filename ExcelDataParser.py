@@ -1,5 +1,6 @@
 import csv
 
+# bullshit
 
 class ParseData:
     def __init__(self, file_path):
