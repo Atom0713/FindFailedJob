@@ -1,36 +1,60 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+  
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Python application
+name: Node.js
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ dev ]
   pull_request:
-    branches: [ develop ]
+    branches: [ dev ]
 
 jobs:
+
   build:
 
     runs-on: ubuntu-latest
+    name: Run npm install and build
+
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
       with:
-        python-version: 3.8
-    - name: Install dependencies
+        node-version: ${{ matrix.node-version }}
+    - name: npm install and build 
       run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pytest
+        npm install
+        npm run build --if-present
+      env:
+        CI: false
+    - name: Deploy build
+    - uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --follow-symlinks --delete --exclude '.git/*' 
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        SOURCE_DIR: './build/'      # optional: defaults to entire repository
+
+#   deploy:
+#     runs-on: ubuntu-latest
+#     name: Deploy app to dev environment
+#     needs: build
+#     steps:
+#     - uses: actions/checkout@v2
+#     - uses: jakejarvis/s3-sync-action@master
+#       with:
+#         args: --follow-symlinks --delete --exclude '.git/*' 
+#       env:
+#         AWS_REGION: 'eu-west-1'
+#         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+#         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         SOURCE_DIR: './build/'      # optional: defaults to entire repository
