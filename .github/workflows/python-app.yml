@@ -34,7 +34,7 @@ jobs:
       env:
         CI: false
     - name: Deploy build
-    - uses: jakejarvis/s3-sync-action@master
+      uses: jakejarvis/s3-sync-action@master
       with:
         args: --follow-symlinks --delete --exclude '.git/*' 
       env:
