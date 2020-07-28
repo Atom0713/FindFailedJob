@@ -1,4 +1,4 @@
-FROM python:2.7.18-windowsservercore
+FROM python:2
 # workdirectory within the Docker venv
 WORKDIR /user/src/app
 
