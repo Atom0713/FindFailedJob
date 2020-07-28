@@ -11,25 +11,34 @@ on:
     branches: [ develop ]
 
 jobs:
-
   build:
 
     runs-on: ubuntu-latest
-    name: Run npm install and build
-
     strategy:
       matrix:
-        node-version: [10.x, 12.x]
+        python-version: 2.7
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: npm install and build 
-      run: |
-        npm install
-        npm run build --if-present
-      env:
-        CI: false
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{matrix.python-version}}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.python-version}}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+  push_to_registry:
+    name: Push Docker image to Docker hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Push to Docker hub
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{{secrets. }}}
+          password: ${{secrets.DOCKER_PASSWORD}}
+          repository: atom13/yayloh
+          tag_with_ref: true
+
+          
